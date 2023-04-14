@@ -6,34 +6,34 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 
-# Список игр Sony PlayStation
+# Sony PlayStation games
 games = ['The Last of Us', 'Uncharted 4: A Thief\'s End', 'Bloodborne', 'Horizon Zero Dawn',
          'God of War', 'Shadow of the Colossus', 'Persona 5', 'Marvel\'s Spider-Man',
          'The Witcher 3: Wild Hunt', 'Death Stranding']
 
-# Запись в CSV-файл
+# entry in CSV-file
 with open('playstation_games.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Game'])
     for game in games:
         writer.writerow([game])
 
-# Запись в JSON-файл
+# entry in JSON-file
 with open('playstation_games.json', mode='w') as file:
     json.dump(games, file)
 
-# Загрузка данных
+# Loading data
 data = pd.read_csv('playstation_games.csv')
 
-# Инициализация приложения Dash
+# Application initialization Dash
 app = dash.Dash(__name__)
 
-# Определение макета приложения
+# Defining the Application Layout
 app.layout = html.Div([
-    # Заголовок
+    # Header
     html.H1('Sony PlayStation games'),
 
-    # Элементы управления для фильтрации данных
+    # Controls for filtering data
     dcc.Dropdown(
         id='dropdown',
         options=[{'label': game, 'value': game} for game in data['Game']],
@@ -41,10 +41,10 @@ app.layout = html.Div([
         clearable=False
     ),
 
-    # График
+    # Schedule
     dcc.Graph(id='graph'),
 
-    # Таблица с данными
+    # Table with data
     html.Table(id='table', children=[
         html.Thead([
             html.Tr([html.Th('Game')])
@@ -54,15 +54,15 @@ app.layout = html.Div([
         ])
     ]),
 
-    # Количество игр
+    # Number of games
     html.P(f'Number of games: {len(data)}'),
 
-    # Список разработчиков
+    # List of developers
     html.P(f'Developers: Naughty Dog, FromSoftware, Guerrilla Games, Santa Monica Studio, '
            f'Bluepoint Games, Atlus, Insomniac Games, CD Projekt RED, Kojima Productions')
 ])
 
-# Функция для обновления графика и таблицы
+# Function to update graph and table
 @app.callback(
     [Output('graph', 'figure'),
      Output('table', 'children')],
@@ -70,13 +70,13 @@ app.layout = html.Div([
 )
 def update_figure_and_table(selected_game):
     filtered_data = data[data['Game'] == selected_game]
-    # Создание графика
+    # Creating a Graph
     fig = {
         'data': [{'x': [selected_game], 'y': [1], 'type': 'bar'}],
         'layout': {'title': f'Number of games: {len(filtered_data)}'}
     }
 
-    # Создание таблицы
+    # Create a table
     table = html.Table(id='table', children=[
         html.Thead([
             html.Tr([html.Th('Game')])
@@ -87,6 +87,6 @@ def update_figure_and_table(selected_game):
     ])
     return fig, table
 
-# Запуск приложения
+# Application launch
 if __name__ == '__main__':
     app.run_server(debug=True)
